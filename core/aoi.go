@@ -1,6 +1,8 @@
 package core
 
-import "fmt"
+import (
+	"fmt"
+)
 
 /*
 	AOI区域管理模块
@@ -77,7 +79,9 @@ func (m *AOIManager) String() string {
 }
 
 
-//根据格子GID 得到周边九宫格格子的ID集合
+/*
+	根据格子GID 得到周边九宫格格子的ID集合
+ */
 func (m *AOIManager) GetSurroundGridsByGid(gID int) (grids []*Grid) {
 	//判断gID是否在 AOIManager中
 	if _, ok := m.grids[gID]; !ok {
@@ -123,3 +127,63 @@ func (m *AOIManager) GetSurroundGridsByGid(gID int) (grids []*Grid) {
 
 	return
 }
+
+
+//通过x、y横纵轴坐标得到当前的GID格子编号
+func (m *AOIManager) GetGidByPos(x, y float32) int {
+	idx := (int(x) - m.MinX) / m.gridWidth()
+	idy := (int(y) - m.MinY) / m.gridLength()
+
+	return idy * m.CntsX + idx
+}
+
+/*
+	通过x、y横纵坐标得到周边九宫格内全部的PlayerIDs
+ */
+func (m *AOIManager) GetPidsByPos(x, y float32) (playerIDs []int) {
+	//得到当前玩家的GID格子id
+	//gid := y * m.CntsX + x
+	gID := m.GetGidByPos(x, y)
+
+	//通过GID得到周边九宫格信息
+	grids := m.GetSurroundGridsByGid(gID)
+
+	//将九宫格的信息里全部的Player的id 累加到 playerIDs
+	for _, grid := range grids {
+		playerIDs = append(playerIDs, grid.GetPlayerIDs()...)
+		fmt.Println("===> grid ID: %d, pids: %v ===", grid.GID, grid.GetPlayerIDs())
+	}
+
+	return
+}
+
+//-------------------网格的增删改查方法-------------------------------
+
+//添加一个PlayerID 到一个格子中
+func (m *AOIManager) AddPidToGrid(pID, gID int) {
+	m.grids[gID].Add(pID)
+}
+//移除一个格子中的PlayerID
+func (m *AOIManager) RemovePidFromGrid(pID, gID int) {
+	m.grids[gID].Remove(pID)
+}
+//通过GID获取全部的PlayerID
+func (m *AOIManager) GetPidsByGid(gID int) (playerIDs []int) {
+	playerIDs = m.grids[gID].GetPlayerIDs()
+	return
+}
+//通过坐标将Player添加到一个格子中
+func (m *AOIManager) AddToGridByPos(pID int, x, y float32) {
+	gID := m.GetGidByPos(x, y)
+	grid := m.grids[gID]
+	grid.Add(pID)
+}
+//通过坐标把一个Player从一个格子中删除
+func (m *AOIManager) RemoveFromGridByPos(pID int, x, y float32) {
+	gID := m.GetGidByPos(x, y)
+	grid := m.grids[gID]
+	grid.Remove(pID)
+}
+
+
+
