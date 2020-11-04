@@ -1,0 +1,3 @@
+syntax="proto3";              //指定protobuf版本信息，不指定会报错
+package pb;                   //后期生成go文件的包名
+option csharp_namespace="Pb"; //给C#提供的选项（交互的客户端是c#语言需要指定服务端pb模块，否则客户端找不到服务端pb模块）
