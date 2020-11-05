@@ -4,6 +4,16 @@ import (
 	"fmt"
 )
 
+//定义一些AOI的边界值，就是地图的大小
+const (
+	AOI_MIN_X int = 85
+	AOI_MAX_X int = 410
+	AOI_CNTS_X int = 10
+	AOI_MIN_Y int = 75
+	AOI_MAX_Y int = 400
+	AOI_CNTS_Y int = 20
+)
+
 /*
 	AOI区域管理模块
  */
